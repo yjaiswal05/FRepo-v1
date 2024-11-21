@@ -1,0 +1,34 @@
+film-social-platform/
+├── client/                 # React frontend
+│   ├── public/
+│   │   ├── index.html
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── common/
+│   │   │   ├── layout/
+│   │   │   ├── movie/
+│   │   │   ├── social/
+│   │   │   └── user/
+│   │   ├── pages/
+│   │   ├── services/
+│   │   ├── context/
+│   │   ├── hooks/
+│   │   ├── utils/
+│   │   └── styles/
+
+
+│   └── package.json
+├── server/                 # Node.js backend
+│   ├── .env
+│   │   ├── PORT=3001
+│   │   ├── DB_USER=your_postgres_user
+│   │   ├── DB_HOST=localhost
+│   │   ├── DB_NAME=film_social
+│   │   ├── DB_PASSWORD=your_postgres_password
+│   │   ├── DB_PORT=5432
+│   │   ├── JWT_SECRET=your_jwt_secret_key
+│   │   ├── REDIS_HOST=localhost
+│   │   ├── REDIS_PORT=6379
+│   │   └── REDIS_PASSWORD=your_redis_password
+├── docker/                 # Docker configuration
+└── docs/                   # Documentation 
