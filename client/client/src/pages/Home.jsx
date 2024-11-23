@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography, Container } from '@mui/material';
+import { Box, Typography, Container, Button } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 
 // Sample movie data with posters
@@ -36,25 +36,46 @@ const sampleMovies = [
   }
 ];
 
+// At the top of the file, add these background images
+const heroBackgrounds = [
+  'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?ixlib=rb-4.0.3',
+  'https://images.unsplash.com/photo-1536440136628-849c177e76a1?ixlib=rb-4.0.3',
+  'https://images.unsplash.com/photo-1440404653325-ab127d49abc1?ixlib=rb-4.0.3',
+  'https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?ixlib=rb-4.0.3',
+  'https://images.unsplash.com/photo-1574267432553-4b4628081c31?ixlib=rb-4.0.3'
+];
+
 const Home = () => {
   const theme = useTheme();
+
+  const randomBackground = heroBackgrounds[Math.floor(Math.random() * heroBackgrounds.length)];
 
   return (
     <Box sx={{ pb: 6 }}>
       {/* Hero Section */}
       <Box
         sx={{
-          height: '100vh',
-          width: '100%',
+          height: '90vh',
+          width: '100vw',
           position: 'relative',
           mb: 6,
-          background: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80')`,
+          background: `linear-gradient(to right, 
+            rgba(0,0,0,1) 0%, 
+            rgba(0,0,0,0.8) 10%, 
+            rgba(0,0,0,0.6) 25%, 
+            rgba(0,0,0,0.6) 75%, 
+            rgba(0,0,0,0.8) 90%, 
+            rgba(0,0,0,1) 100%),
+            linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.8)), 
+            url('${randomBackground}')`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          marginTop: '-64px',
+          marginTop: '-100px',
+          marginLeft: '-24px',  // Compensate for any default page padding
+          marginRight: '-24px', // Compensate for any default page padding
           paddingTop: '64px',
         }}
       >
@@ -77,7 +98,7 @@ const Home = () => {
               fontSize: { xs: '2.5rem', sm: '3.5rem', md: '4.5rem' },
             }}
           >
-            Track films you've watched.
+            Your Ultimate Movie Journal, Redefined
           </Typography>
           <Typography
             variant="h5"
@@ -89,8 +110,32 @@ const Home = () => {
               opacity: 0.9,
             }}
           >
-            Save those you want to see. Tell your friends what's good.
+            Discover. Review. Connect. All Things Cinema, in One Place.
           </Typography>
+          
+          {/* CTA Button */}
+          <Button
+            variant="outlined"
+            sx={{
+              borderColor: 'rgba(255, 255, 255, 0.7)',
+              color: 'white',
+              padding: '8px 16px',
+              borderRadius: '20px',
+              fontSize: '1rem',
+              textTransform: 'none',
+              transition: 'transform 0.3s, background-color 0.3s',
+              '&:hover': {
+                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                borderColor: '#ff3d47',
+                color: '#ff3d47',
+                boxShadow: '0 8px 20px rgba(0, 0, 0, 0.5)',
+              },
+              boxShadow: '0 2px 10px rgba(0, 0, 0, 0.5)',
+              mt: 3,
+            }}
+          >
+            Get Started Now
+          </Button>
         </Container>
       </Box>
 
