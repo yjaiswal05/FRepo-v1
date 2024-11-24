@@ -1,6 +1,7 @@
 import React from 'react';
 import { Box, Typography, Container, Button } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
+import { styled } from '@mui/system';
 
 // Sample movie data with posters
 const sampleMovies = [
@@ -45,6 +46,50 @@ const heroBackgrounds = [
   'https://images.unsplash.com/photo-1574267432553-4b4628081c31?ixlib=rb-4.0.3'
 ];
 
+// Styled component for the glassmorphic effect
+const GlassmorphicBar = styled(Box)({
+  background: 'rgba(255, 255, 255, 0.1)', // Semi-transparent background
+  backdropFilter: 'blur(15px)', // Blur effect
+  borderRadius: '15px', // Rounded corners
+  padding: '20px', // Padding for the bar
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  marginTop: '50px', // Space above the bar
+});
+
+const IconWrapper = styled('div')({
+  display: 'inline-block',
+  margin: '0 10px',
+  transition: 'transform 0.3s, filter 0.3s',
+  '&:hover': {
+    transform: 'scale(1.1)', // Scale up on hover
+    filter: 'brightness(1.2)', // Brighten the icon on hover
+  },
+});
+
+// New section for vertical metrics
+const VerticalMetricsSection = styled(Box)({
+  display: 'flex',
+  justifyContent: 'space-around', // Space out the metrics evenly
+  marginTop: '60px', // Space above the vertical metrics section
+  padding: '20px 0', // Padding for the section
+});
+
+const VerticalMetric = styled(Box)({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  width: '70%', // Width for each metric
+  borderLeft: '1px solid rgba(255, 255, 255, 0.2)', // Left border for separation
+  justifyContent: 'space-between',
+  padding: '10px', // Padding for each metric
+  '&:first-of-type': {
+    borderLeft: 'none', // Remove left border for the first metric
+    
+  },
+});
+
 const Home = () => {
   const theme = useTheme();
 
@@ -59,14 +104,7 @@ const Home = () => {
           width: '100vw',
           position: 'relative',
           mb: 6,
-          background: `linear-gradient(to right, 
-            rgba(0,0,0,1) 0%, 
-            rgba(0,0,0,0.8) 10%, 
-            rgba(0,0,0,0.6) 25%, 
-            rgba(0,0,0,0.6) 75%, 
-            rgba(0,0,0,0.8) 90%, 
-            rgba(0,0,0,1) 100%),
-            linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.8)), 
+          background: `linear-gradient(to bottom, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.8)), 
             url('${randomBackground}')`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
@@ -136,8 +174,62 @@ const Home = () => {
           >
             Get Started Now
           </Button>
+
+          {/* Glassmorphic Bar for OTT Platform Icons */}
+          <GlassmorphicBar>
+            <IconWrapper>
+              <img src="/path/to/netflix-icon.png" alt="Netflix" width="50" />
+            </IconWrapper>
+            <IconWrapper>
+              <img src="/path/to/hulu-icon.png" alt="Hulu" width="50" />
+            </IconWrapper>
+            <IconWrapper>
+              <img src="/path/to/amazon-prime-icon.png" alt="Amazon Prime" width="50" />
+            </IconWrapper>
+            <IconWrapper>
+              <img src="/path/to/disney-plus-icon.png" alt="Disney+" width="50" />
+            </IconWrapper>
+          </GlassmorphicBar>
         </Container>
       </Box>
+
+      {/* New Vertical Metrics Section */}
+      <Container>
+        <VerticalMetricsSection>
+          <VerticalMetric>
+            <Typography variant="h5" sx={{ color: 'white' }}>
+            2510 Movies Liked
+            </Typography>
+            <Typography variant="body2" sx={{ color: '#989898' }}>
+            By film enthusiasts who share your passion for cinema
+            </Typography>
+          </VerticalMetric>
+          <VerticalMetric>
+            <Typography variant="h5" sx={{ color: 'white' }}>
+            5895 Watchlists Created
+            </Typography>
+            <Typography variant="body2" sx={{ color: '#989898' }}>
+            Handpicked collections for every mood and genre
+            </Typography>
+          </VerticalMetric>
+          <VerticalMetric>
+            <Typography variant="h5" sx={{ color: 'white' }}>
+            6366 Movies & Series
+            </Typography>
+            <Typography variant="body2" sx={{ color: '#989898' }}>
+            Spanning over 25+ streaming platforms, all in one place
+            </Typography>
+          </VerticalMetric>
+          <VerticalMetric>
+            <Typography variant="h5" sx={{ color: 'white' }}>
+            5871 Watching Right Now
+            </Typography>
+            <Typography variant="body2" sx={{ color: '#989898' }}>
+            Join the crowd in exploring the latest trending titles
+            </Typography>
+          </VerticalMetric>
+        </VerticalMetricsSection>
+      </Container>
 
       {/* Movie Cards Section */}
       <Container>
