@@ -1,51 +1,10 @@
 import React from 'react';
-import { Box, Typography, Container, Button } from '@mui/material';
-import { useTheme } from '@mui/material/styles';
+import { Box, Typography, Container, Button, Tabs, Tab, IconButton, Chip, Tooltip, Grid, Stack, TextField } from '@mui/material';
 import { styled } from '@mui/system';
-import { ThumbUp, List, Movie, Visibility, SyncAlt, StarRate, Book, Groups } from '@mui/icons-material';
-
-// Sample movie data with posters
-const sampleMovies = [
-  {
-    id: 1,
-    title: "Inception",
-    poster: "https://image.tmdb.org/t/p/w500/8IB2e4r4oVhHnANbnm7O3Tj6tF8.jpg"
-  },
-  {
-    id: 2,
-    title: "The Dark Knight",
-    poster: "https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg"
-  },
-  {
-    id: 3,
-    title: "Interstellar",
-    poster: "https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg"
-  },
-  {
-    id: 4,
-    title: "Pulp Fiction",
-    poster: "https://image.tmdb.org/t/p/w500/fIE3lAGcZDV1G6XM5KmuWnNsPp1.jpg"
-  },
-  {
-    id: 5,
-    title: "The Godfather",
-    poster: "https://image.tmdb.org/t/p/w500/3bhkrj58Vtu7enYsRolD1fZdja1.jpg"
-  },
-  {
-    id: 6,
-    title: "Fight Club",
-    poster: "https://image.tmdb.org/t/p/w500/pB8BM7pdSp6B6Ih7QZ4DrQ3PmJK.jpg"
-  }
-];
-
-// At the top of the file, add these background images
-const heroBackgrounds = [
-  'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?ixlib=rb-4.0.3',
-  'https://images.unsplash.com/photo-1536440136628-849c177e76a1?ixlib=rb-4.0.3',
-  'https://images.unsplash.com/photo-1440404653325-ab127d49abc1?ixlib=rb-4.0.3',
-  'https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?ixlib=rb-4.0.3',
-  'https://images.unsplash.com/photo-1574267432553-4b4628081c31?ixlib=rb-4.0.3'
-];
+import { ThumbUp, List, Movie, Visibility, SyncAlt, StarRate, Book, Groups, ArrowBackIos, ArrowForwardIos, Whatshot, Star, NewReleases, Update, LocalFireDepartment, Theaters, AutoAwesome, Schedule, Favorite, Facebook, Twitter, Instagram, YouTube, KeyboardArrowUp } from '@mui/icons-material';
+import { useState, useEffect, useRef } from 'react';
+import Icon from '../components/Icon';
+import { getHeroImages } from '../services/heroImageService';
 
 // Styled component for the glassmorphic effect
 const GlassmorphicBar = styled(Box)({
@@ -213,12 +172,730 @@ const FilmFrame = styled(Box)({
   }
 });
 
+// Add this styled tooltip component
+const StyledTooltip = styled(({ className, ...props }) => (
+  <Tooltip {...props} classes={{ popper: className }} />
+))({
+  '& .MuiTooltip-tooltip': {
+    backgroundColor: 'rgba(0, 0, 0, 0.85)',
+    padding: '8px 12px',
+    fontSize: '0.75rem',
+    borderRadius: '4px',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '4px',
+  },
+});
+
+// Add this array of movie poster URLs
+const moviePosters = [
+  "https://image.tmdb.org/t/p/w500/rktDFPbfHfUbArZ6OOOKsXcv0Bm.jpg", // Oppenheimer
+  "https://image.tmdb.org/t/p/w500/qhb1qOilapbapxWQn9jtRCMwXJF.jpg", // Barbie
+  "https://image.tmdb.org/t/p/w500/kDp1vUBnMpe8ak4rjgl3cLELqjU.jpg", // Anyone But You
+  "https://image.tmdb.org/t/p/w500/7WsyChQLEftFiDOVTGkv3hFpyyt.jpg", // Avengers
+  "https://image.tmdb.org/t/p/w500/A7SobaUTvb6d6gFCXyID8bQmd8i.jpg", // Wonka
+  "https://image.tmdb.org/t/p/w500/8xV47NDrjdZDpkVcCFqkdHa3T0C.jpg", // Aquaman
+  "https://image.tmdb.org/t/p/w500/vZloFAK7NmvMGKE7VkF5UHaz0I.jpg", // Migration
+  "https://image.tmdb.org/t/p/w500/jXJxMcVoEuXzql3lXPi8jqAQwR4.jpg", // Mean Girls
+  "https://image.tmdb.org/t/p/w500/cGXFosYUHYjjdKrOmA0bbjvzhKz.jpg", // Poor Things
+  "https://image.tmdb.org/t/p/w500/mBaXZ95R2OxueZhvQbcEWy2DqyO.jpg", // Madame Web
+];
+
+const MovieSection = () => {
+  const [activeTab, setActiveTab] = useState(0);
+  const [activeFilter, setActiveFilter] = useState('All');
+  const scrollContainerRef = useRef(null);
+  const filterScrollRef = useRef(null);
+
+  const handleScroll = (direction) => {
+    if (scrollContainerRef.current) {
+      const scrollAmount = 300; // Adjust scroll amount as needed
+      scrollContainerRef.current.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  // Function to handle filter scroll
+  const handleFilterScroll = (direction) => {
+    if (filterScrollRef.current) {
+      const scrollAmount = 200;
+      filterScrollRef.current.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  const tabs = [
+    { 
+      label: "Trending Now", 
+      icon: <LocalFireDepartment sx={{ 
+        color: activeTab === 0 ? '#ff3d47' : '#989898',
+        mr: 1,
+        animation: activeTab === 0 ? 'flicker 1.5s infinite' : 'none',
+        '@keyframes flicker': {
+          '0%, 100%': {
+            opacity: 1,
+            transform: 'scale(1)',
+          },
+          '50%': {
+            opacity: 0.8,
+            transform: 'scale(1.1)',
+          },
+        }
+      }}/> 
+    },
+    { 
+      label: "Popular", 
+      icon: <AutoAwesome sx={{ 
+        color: activeTab === 1 ? '#ff3d47' : '#989898',
+        mr: 1,
+        animation: activeTab === 1 ? 'sparkle 2s infinite' : 'none',
+        '@keyframes sparkle': {
+          '0%, 100%': {
+            transform: 'scale(1) rotate(0deg)',
+          },
+          '50%': {
+            transform: 'scale(1.2) rotate(180deg)',
+          },
+        }
+      }}/> 
+    },
+    { 
+      label: "Premier", 
+      icon: <Theaters sx={{ 
+        color: activeTab === 2 ? '#ff3d47' : '#989898',
+        mr: 1,
+        transition: 'transform 0.3s ease',
+        transform: activeTab === 2 ? 'scale(1.1)' : 'scale(1)',
+      }}/> 
+    },
+    { 
+      label: "Recently Added", 
+      icon: <Schedule sx={{ 
+        color: activeTab === 3 ? '#ff3d47' : '#989898',
+        mr: 1,
+        animation: activeTab === 3 ? 'pulse 2s infinite' : 'none',
+        '@keyframes pulse': {
+          '0%, 100%': {
+            transform: 'scale(1)',
+          },
+          '50%': {
+            transform: 'scale(1.1)',
+          },
+        }
+      }}/> 
+    }
+  ];
+
+  // Filter chips data
+  const filterChips = [
+    'All',
+    'Action',
+    'Comedy',
+    'Drama',
+    'Thriller',
+    'Horror',
+    'Romance',
+    'Sci-Fi',
+    'Adventure',
+    'Animation',
+    'Crime',
+    'Documentary',
+    'Fantasy',
+    'Mystery',
+  ];
+
+  return (
+    <Container sx={{ mt: 8 }}>
+      <Box sx={{ 
+        backgroundColor: 'rgba(0, 0, 0, 0.2)', // Subtle background
+        borderRadius: '12px',
+        padding: '16px 24px', // Padding around all tabs
+        mb: 4,
+      }}>
+        <Tabs 
+          value={activeTab} 
+          onChange={(e, newValue) => setActiveTab(newValue)}
+          sx={{
+            '& .MuiTabs-indicator': {
+              backgroundColor: '#ff3d47',
+              height: '3px',
+              borderRadius: '3px',
+            },
+            '& .MuiTabs-flexContainer': {
+              gap: '32px', // Space between tabs
+              justifyContent: 'center', // Center the tabs
+            }
+          }}
+        >
+          {tabs.map((tab, index) => (
+            <Tab 
+              key={index}
+              icon={tab.icon}
+              label={tab.label}
+              iconPosition="start"
+              sx={{
+                flexDirection: 'row',
+                justifyContent: 'flex-start',
+                gap: 0.5,
+                padding: '8px 16px', // Padding within each tab
+                minWidth: 'auto',
+                transform: activeTab === index ? 'scale(1.15)' : 'scale(1)',
+                transformOrigin: 'center center',
+                transition: 'transform 0.3s ease',
+                '& .MuiSvgIcon-root': {
+                  marginBottom: '0 !important',
+                  marginRight: '8px',
+                  fontSize: '22px',
+                },
+                '&.Mui-selected': {
+                  color: '#ff3d47',
+                  fontWeight: '500',
+                },
+                '&:hover': {
+                  color: '#ff3d47',
+                  opacity: 0.8,
+                },
+              }}
+            />
+          ))}
+        </Tabs>
+      </Box>
+
+      {/* Filter Chips with Navigation Buttons */}
+      <Box sx={{ 
+        position: 'relative',
+        mt: 2,
+        mb: 3,
+      }}>
+        {/* Left Navigation Button */}
+        <IconButton
+          onClick={() => handleFilterScroll('left')}
+          sx={{
+            position: 'absolute',
+            left: 0,
+            top: '50%',
+            transform: 'translateY(-50%)',
+            zIndex: 2,
+            backgroundColor: 'rgba(0,0,0,0.8)',
+            width: '32px',
+            height: '32px',
+            '&:hover': {
+              backgroundColor: 'rgba(0,0,0,0.9)',
+            },
+            // Show/hide based on scroll position
+            '&::before': {
+              content: '""',
+              position: 'absolute',
+              right: '100%',
+              top: 0,
+              bottom: 0,
+              width: '30px',
+              background: 'linear-gradient(to right, transparent, rgba(0,0,0,0.8))',
+            }
+          }}
+        >
+          <ArrowBackIos sx={{ fontSize: '18px', color: 'white', ml: 1 }} />
+        </IconButton>
+
+        {/* Scrollable Filter Container */}
+        <Box
+          ref={filterScrollRef}
+          sx={{
+            display: 'flex',
+            gap: '12px',
+            overflowX: 'auto',
+            scrollbarWidth: 'none', // Firefox
+            '&::-webkit-scrollbar': {
+              display: 'none', // Chrome, Safari, Edge
+            },
+            mx: '40px', // Space for buttons
+            px: 1,
+          }}
+        >
+          {filterChips.map((filter) => (
+            <Chip
+              key={filter}
+              label={filter}
+              onClick={() => setActiveFilter(filter)}
+              sx={{
+                backgroundColor: activeFilter === filter ? '#ff3d47' : 'rgba(255, 255, 255, 0.08)',
+                color: activeFilter === filter ? 'white' : '#989898',
+                borderRadius: '20px',
+                px: 1,
+                height: '32px',
+                fontSize: '0.9rem',
+                fontWeight: activeFilter === filter ? '500' : '400',
+                cursor: 'pointer',
+                '&:hover': {
+                  backgroundColor: activeFilter === filter 
+                    ? '#ff3d47' 
+                    : 'rgba(255, 255, 255, 0.15)',
+                },
+                transition: 'all 0.3s ease',
+                border: activeFilter === filter 
+                  ? '1px solid rgba(255,61,71,0.5)' 
+                  : '1px solid rgba(255,255,255,0.1)',
+                whiteSpace: 'nowrap',
+                flexShrink: 0,
+              }}
+            />
+          ))}
+        </Box>
+
+        {/* Right Navigation Button */}
+        <IconButton
+          onClick={() => handleFilterScroll('right')}
+          sx={{
+            position: 'absolute',
+            right: 0,
+            top: '50%',
+            transform: 'translateY(-50%)',
+            zIndex: 2,
+            backgroundColor: 'rgba(0,0,0,0.8)',
+            width: '32px',
+            height: '32px',
+            '&:hover': {
+              backgroundColor: 'rgba(0,0,0,0.9)',
+            },
+            // Show/hide based on scroll position
+            '&::before': {
+              content: '""',
+              position: 'absolute',
+              left: '100%',
+              top: 0,
+              bottom: 0,
+              width: '30px',
+              background: 'linear-gradient(to left, transparent, rgba(0,0,0,0.8))',
+            }
+          }}
+        >
+          <ArrowForwardIos sx={{ fontSize: '18px', color: 'white' }} />
+        </IconButton>
+      </Box>
+
+      {/* Movies Scroll Section */}
+      <Box sx={{ position: 'relative' }}>
+        {/* Left Arrow */}
+        <IconButton 
+          onClick={() => handleScroll('left')}
+          sx={{
+            position: 'absolute',
+            left: -20,
+            top: '50%',
+            transform: 'translateY(-50%)',
+            backgroundColor: 'rgba(0,0,0,0.5)',
+            color: 'white',
+            '&:hover': {
+              backgroundColor: 'rgba(255,61,71,0.8)',
+            },
+            zIndex: 2,
+          }}
+        >
+          <ArrowBackIos />
+        </IconButton>
+
+        {/* Movies Container */}
+        <Box
+          ref={scrollContainerRef}
+          sx={{
+            display: 'flex',
+            gap: '20px',
+            overflowX: 'hidden',
+            scrollBehavior: 'smooth',
+            py: 2,
+            px: 1,
+          }}
+        >
+          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((movie) => (
+            <Box
+              key={movie}
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                width: '200px', // Original width
+                flexShrink: 0,
+              }}
+            >
+              {/* Movie Card */}
+              <Box
+                sx={{
+                  width: '200px',
+                  height: '300px',
+                  backgroundColor: '#1a1a1a',
+                  borderRadius: '8px',
+                  overflow: 'hidden',
+                  transition: 'all 0.3s ease',
+                  position: 'relative',
+                  '&:hover': {
+                    transform: 'translateY(-4px)',
+                    boxShadow: '0 8px 16px rgba(0,0,0,0.3)',
+                  },
+                }}
+              >
+                <Box
+                  component="img"
+                  src={moviePosters[movie - 1]} // Using index to get poster URL
+                  alt={`Movie ${movie}`}
+                  sx={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                  }}
+                />
+              </Box>
+
+              {/* Movie Details Below Card */}
+              <Box sx={{ mt: 2 }}>
+                <Typography 
+                  variant="subtitle1" 
+                  sx={{ 
+                    color: 'white',
+                    fontWeight: '500',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                    '&:hover': {
+                      color: '#ff3d47',
+                    },
+                    transition: 'color 0.2s ease',
+                    cursor: 'pointer',
+                  }}
+                >
+                  Movie Title {movie}
+                </Typography>
+                
+                <Box sx={{ 
+                  display: 'flex', 
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  mt: 0.5 
+                }}>
+                  {/* Genre and Year */}
+                  <Box sx={{ 
+                    display: 'flex', 
+                    alignItems: 'center',
+                    gap: 1,
+                  }}>
+                    <Typography variant="caption" sx={{ color: '#989898' }}>
+                      2024
+                    </Typography>
+                    <Box sx={{ 
+                      width: '3px', 
+                      height: '3px', 
+                      borderRadius: '50%', 
+                      backgroundColor: '#989898' 
+                    }} />
+                    <Typography variant="caption" sx={{ color: '#989898' }}>
+                      Action
+                    </Typography>
+                  </Box>
+
+                  {/* Icons with Stats */}
+                  <Box sx={{ 
+                    display: 'flex', 
+                    alignItems: 'center',
+                    gap: 2,
+                  }}>
+                    <StyledTooltip 
+                      title={
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                          <Typography variant="caption">1.2K Likes</Typography>
+                        </Box>
+                      }
+                      arrow
+                      placement="top"
+                    >
+                      <Box sx={{ 
+                        display: 'flex', 
+                        alignItems: 'center',
+                        cursor: 'pointer',
+                        '&:hover': {
+                          '& .MuiSvgIcon-root': { color: '#ff3d47' },
+                        }
+                      }}>
+                        <Favorite sx={{ 
+                          fontSize: '16px', 
+                          color: '#989898',
+                          transition: 'color 0.2s ease',
+                        }} />
+                      </Box>
+                    </StyledTooltip>
+
+                    <StyledTooltip 
+                      title={
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                          <Typography variant="caption">3.4K Views</Typography>
+                        </Box>
+                      }
+                      arrow
+                      placement="top"
+                    >
+                      <Box sx={{ 
+                        display: 'flex', 
+                        alignItems: 'center',
+                        cursor: 'pointer',
+                        '&:hover': {
+                          '& .MuiSvgIcon-root': { color: '#ff3d47' },
+                        }
+                      }}>
+                        <Visibility sx={{ 
+                          fontSize: '16px', 
+                          color: '#989898',
+                          transition: 'color 0.2s ease',
+                        }} />
+                      </Box>
+                    </StyledTooltip>
+
+                    <StyledTooltip 
+                      title={
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                          <Typography variant="caption">4.5 Rating</Typography>
+                          <Star sx={{ fontSize: '12px', color: '#ffd700' }} />
+                        </Box>
+                      }
+                      arrow
+                      placement="top"
+                    >
+                      <Box sx={{ 
+                        display: 'flex', 
+                        alignItems: 'center',
+                        cursor: 'pointer',
+                        '&:hover': {
+                          '& .MuiSvgIcon-root': { color: '#ffd700' },
+                        }
+                      }}>
+                        <Star sx={{ 
+                          fontSize: '16px', 
+                          color: '#989898',
+                          transition: 'color 0.2s ease',
+                        }} />
+                      </Box>
+                    </StyledTooltip>
+                  </Box>
+                </Box>
+              </Box>
+            </Box>
+          ))}
+        </Box>
+
+        {/* Right Arrow */}
+        <IconButton 
+          onClick={() => handleScroll('right')}
+          sx={{
+            position: 'absolute',
+            right: -20,
+            top: '50%',
+            transform: 'translateY(-50%)',
+            backgroundColor: 'rgba(0,0,0,0.5)',
+            color: 'white',
+            '&:hover': {
+              backgroundColor: 'rgba(255,61,71,0.8)',
+            },
+            zIndex: 2,
+          }}
+        >
+          <ArrowForwardIos />
+        </IconButton>
+      </Box>
+    </Container>
+  );
+};
+
+const Footer = () => {
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  return (
+    <Box 
+      sx={{ 
+        mt: 8,
+        pt: 6,
+        pb: 4,
+        backgroundColor: 'rgba(0, 0, 0, 0.3)',
+        borderTop: '1px solid rgba(255, 255, 255, 0.1)',
+      }}
+    >
+      <Container>
+        {/* Back to Top Button */}
+        <Box 
+          sx={{ 
+            display: 'flex', 
+            justifyContent: 'center',
+            mb: 4 
+          }}
+        >
+          <IconButton 
+            onClick={scrollToTop}
+            sx={{
+              backgroundColor: 'rgba(255, 255, 255, 0.1)',
+              '&:hover': {
+                backgroundColor: 'rgba(255, 61, 71, 0.2)',
+                '& .MuiSvgIcon-root': {
+                  color: '#ff3d47'
+                }
+              }
+            }}
+          >
+            <KeyboardArrowUp sx={{ color: '#989898' }} />
+          </IconButton>
+        </Box>
+
+        {/* Main Footer Content */}
+        <Grid container spacing={4}>
+          {/* Company Info */}
+          <Grid item xs={12} sm={6} md={3}>
+            <Typography variant="h6" sx={{ color: 'white', mb: 2 }}>
+              MovieHub
+            </Typography>
+            <Typography variant="body2" sx={{ color: '#989898', mb: 2 }}>
+              Your ultimate destination for movies and TV shows. Track, rate, and discover your next favorite.
+            </Typography>
+            {/* Social Links */}
+            <Stack direction="row" spacing={2}>
+              {[Facebook, Twitter, Instagram, YouTube].map((Icon, index) => (
+                <IconButton 
+                  key={index}
+                  sx={{
+                    color: '#989898',
+                    '&:hover': {
+                      color: '#ff3d47'
+                    }
+                  }}
+                >
+                  <Icon src={Icon} alt={Icon} />
+                </IconButton>
+              ))}
+            </Stack>
+          </Grid>
+
+          {/* Quick Links */}
+          <Grid item xs={12} sm={6} md={3}>
+            <Typography variant="h6" sx={{ color: 'white', mb: 2 }}>
+              Quick Links
+            </Typography>
+            {['Home', 'Movies', 'TV Shows', 'My List', 'About Us'].map((link) => (
+              <Typography 
+                key={link}
+                variant="body2" 
+                sx={{ 
+                  color: '#989898', 
+                  mb: 1,
+                  cursor: 'pointer',
+                  '&:hover': {
+                    color: '#ff3d47'
+                  }
+                }}
+              >
+                {link}
+              </Typography>
+            ))}
+          </Grid>
+
+          {/* Help & Support */}
+          <Grid item xs={12} sm={6} md={3}>
+            <Typography variant="h6" sx={{ color: 'white', mb: 2 }}>
+              Help & Support
+            </Typography>
+            {['FAQ', 'Contact Us', 'Privacy Policy', 'Terms of Service'].map((link) => (
+              <Typography 
+                key={link}
+                variant="body2" 
+                sx={{ 
+                  color: '#989898', 
+                  mb: 1,
+                  cursor: 'pointer',
+                  '&:hover': {
+                    color: '#ff3d47'
+                  }
+                }}
+              >
+                {link}
+              </Typography>
+            ))}
+          </Grid>
+
+          {/* Newsletter */}
+          <Grid item xs={12} sm={6} md={3}>
+            <Typography variant="h6" sx={{ color: 'white', mb: 2 }}>
+              Newsletter
+            </Typography>
+            <Typography variant="body2" sx={{ color: '#989898', mb: 2 }}>
+              Subscribe to our newsletter for updates and exclusive content.
+            </Typography>
+            <TextField
+              variant="outlined"
+              size="small"
+              placeholder="Your email"
+              fullWidth
+              sx={{
+                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                borderRadius: 1,
+                '& .MuiOutlinedInput-root': {
+                  color: 'white',
+                  '& fieldset': {
+                    borderColor: 'rgba(255, 255, 255, 0.1)',
+                  },
+                  '&:hover fieldset': {
+                    borderColor: '#ff3d47',
+                  },
+                },
+              }}
+            />
+          </Grid>
+        </Grid>
+
+        {/* Bottom Bar */}
+        <Box 
+          sx={{ 
+            mt: 6,
+            pt: 3,
+            borderTop: '1px solid rgba(255, 255, 255, 0.1)',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: 2
+          }}
+        >
+          <Typography variant="body2" sx={{ color: '#989898' }}>
+            © 2024 MovieHub. All rights reserved.
+          </Typography>
+          <Typography variant="body2" sx={{ color: '#989898' }}>
+            Made with ❤️ for movie lovers
+          </Typography>
+        </Box>
+      </Container>
+    </Box>
+  );
+};
+
 const Home = () => {
-  const theme = useTheme();
-
-  const randomBackground = heroBackgrounds[Math.floor(Math.random() * heroBackgrounds.length)];
-
+  const [heroImages, setHeroImages] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [activeFeature, setActiveFeature] = React.useState(0);
+  const [imageError, setImageError] = useState({});
+
+  useEffect(() => {
+    const fetchHeroImages = async () => {
+      try {
+        const images = await getHeroImages();
+        setHeroImages(images);
+      } catch (err) {
+        setError('Failed to load hero images');
+        console.error('Error:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchHeroImages();
+  }, []);
 
   const getFeatureDescription = (index) => {
     const descriptions = [
@@ -240,7 +917,7 @@ const Home = () => {
   };
 
   return (
-    <Box sx={{ pb: 6 }}>
+    <Box>
       {/* Hero Section */}
       <Box
         sx={{
@@ -248,16 +925,18 @@ const Home = () => {
           width: '100vw',
           position: 'relative',
           mb: 6,
-          background: `linear-gradient(to bottom, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.8)), 
-            url('${randomBackground}')`,
+          background: heroImages.length > 0 
+            ? `linear-gradient(to bottom, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.8)), 
+               url('${heroImages[Math.floor(Math.random() * heroImages.length)]?.image_url}')`
+            : 'linear-gradient(to bottom, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.8))',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           marginTop: '-100px',
-          marginLeft: '-24px',  // Compensate for any default page padding
-          marginRight: '-24px', // Compensate for any default page padding
+          marginLeft: '-24px',
+          marginRight: '-24px',
           paddingTop: '64px',
         }}
       >
@@ -609,6 +1288,12 @@ const Home = () => {
                     component="img"
                     src={getFeatureImage(index)}
                     alt={`Feature ${index + 1}`}
+                    onError={(e) => {
+                      console.log(`Failed to load image for Feature ${index + 1}`);
+                      setImageError(prev => ({...prev, [index]: true}));
+                      // Optionally set a fallback image
+                      e.target.src = 'https://picsum.photos/1200/800'; // fallback image
+                    }}
                     sx={{
                       width: '100%',
                       height: '100%',
@@ -681,128 +1366,9 @@ const Home = () => {
         </FeatureSection>
       </Container>
 
-      {/* Movie Cards Section */}
-      <Container>
-        <Box sx={{ mb: 6 }}>
-          <Typography
-            variant="h5"
-            sx={{
-              color: 'white',
-              fontWeight: 'bold',
-              mb: 3
-            }}
-          >
-            Popular Now
-          </Typography>
-          <Box
-            sx={{
-              display: 'flex',
-              gap: 2,
-              overflowX: 'auto',
-              pb: 2,
-              '&::-webkit-scrollbar': {
-                height: 8,
-              },
-              '&::-webkit-scrollbar-track': {
-                backgroundColor: theme.palette.background.paper,
-              },
-              '&::-webkit-scrollbar-thumb': {
-                backgroundColor: theme.palette.secondary.main,
-                borderRadius: 4,
-              },
-            }}
-          >
-            {sampleMovies.map((movie) => (
-              <Box
-                key={movie.id}
-                sx={{
-                  minWidth: 200,
-                  height: 300,
-                  backgroundColor: theme.palette.background.paper,
-                  borderRadius: 1,
-                  overflow: 'hidden',
-                  position: 'relative',
-                  transition: 'all 0.3s ease-in-out',
-                  '&:hover': {
-                    transform: 'scale(1.05)',
-                    cursor: 'pointer',
-                    '& .movie-info': {
-                      opacity: 1,
-                    }
-                  },
-                }}
-              >
-                {/* Movie Poster */}
-                <Box
-                  component="img"
-                  src={movie.poster}
-                  alt={movie.title}
-                  sx={{
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'cover',
-                  }}
-                />
-                {/* Hover Overlay */}
-                <Box
-                  className="movie-info"
-                  sx={{
-                    position: 'absolute',
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    padding: 2,
-                    background: 'linear-gradient(transparent, rgba(0,0,0,0.8))',
-                    opacity: 0,
-                    transition: 'opacity 0.3s ease-in-out',
-                  }}
-                >
-                  <Typography variant="subtitle1" sx={{ color: 'white' }}>
-                    {movie.title}
-                  </Typography>
-                </Box>
-              </Box>
-            ))}
-          </Box>
-        </Box>
-
-        {/* Recent Reviews Section */}
-        <Box sx={{ mb: 6 }}>
-          <Typography
-            variant="h5"
-            sx={{
-              color: 'white',
-              fontWeight: 'bold',
-              mb: 3
-            }}
-          >
-            Recent Reviews
-          </Typography>
-          <Box
-            sx={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))',
-              gap: 3,
-            }}
-          >
-            {[1, 2, 3, 4].map((item) => (
-              <Box
-                key={item}
-                sx={{
-                  height: 200,
-                  backgroundColor: theme.palette.background.paper,
-                  borderRadius: 1,
-                  p: 2,
-                  transition: 'transform 0.2s',
-                  '&:hover': {
-                    transform: 'translateY(-5px)',
-                  }
-                }}
-              />
-            ))}
-          </Box>
-        </Box>
-      </Container>
+      {/* New Movie Section with Tabs */}
+      <MovieSection />
+      <Footer />
     </Box>
   );
 };

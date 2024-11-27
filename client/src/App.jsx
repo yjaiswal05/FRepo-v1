@@ -17,6 +17,7 @@ import MovieDetails from './pages/movies/MovieDetails';
 import SearchResults from './pages/search/SearchResults';
 import UserProfile from './pages/profile/UserProfile';
 import ProtectedRoute from './components/common/ProtectedRoute';
+import Admin from './pages/Admin';
 
 const queryClient = new QueryClient();
 
@@ -43,6 +44,7 @@ const App = () => {
                     </ProtectedRoute>
                   }
                 />
+                <Route path="/admin" element={<Admin />} />
               </Routes>
             </MainLayout>
           </Router>
