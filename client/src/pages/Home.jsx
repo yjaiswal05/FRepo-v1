@@ -5,6 +5,7 @@ import { ThumbUp, List, Movie, Visibility, SyncAlt, StarRate, Book, Groups, Arro
 import { useState, useEffect, useRef } from 'react';
 import Icon from '../components/Icon';
 import { getHeroImages } from '../services/heroImageService';
+import axios from 'axios';
 
 // Styled component for the glassmorphic effect
 const GlassmorphicBar = styled(Box)({
@@ -884,13 +885,10 @@ const Home = () => {
   useEffect(() => {
     const fetchHeroImages = async () => {
       try {
-        const images = await getHeroImages();
-        setHeroImages(images);
-      } catch (err) {
-        setError('Failed to load hero images');
-        console.error('Error:', err);
-      } finally {
-        setLoading(false);
+        const response = await axios.get('http://localhost:5000/api/hero-images');
+        setHeroImages(response.data);
+      } catch (error) {
+        console.error('Error fetching hero images:', error);
       }
     };
 
@@ -927,7 +925,7 @@ const Home = () => {
           mb: 6,
           background: heroImages.length > 0 
             ? `linear-gradient(to bottom, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.8)), 
-               url('${heroImages[Math.floor(Math.random() * heroImages.length)]?.image_url}')`
+               url('https://image.tmdb.org/t/p/original${heroImages[Math.floor(Math.random() * heroImages.length)]?.backdrop_path}')`
             : 'linear-gradient(to bottom, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.8))',
           backgroundSize: 'cover',
           backgroundPosition: 'center',

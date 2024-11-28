@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material';
 import Navbar from './components/layout/Navbar';
 import './App.css';
-import Home from './pages/Home';
+import Home from './pages/Home.jsx';
 
 // Create a custom theme
 const theme = createTheme({

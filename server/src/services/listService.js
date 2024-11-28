@@ -1,4 +1,4 @@
-import { db } from '../config/database';
+import { db } from '../config/db.config.js';
 
 export class ListService {
     async getUserLists(userId) {

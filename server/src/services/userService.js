@@ -1,4 +1,4 @@
-import { db } from '../config/database';
+import { db } from '../config/db.config.js';
 import { hash, compare } from 'bcrypt';
 import jwt from 'jsonwebtoken';
 

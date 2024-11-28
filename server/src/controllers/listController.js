@@ -1,4 +1,4 @@
-import { ListService } from '../services/listService';
+import { ListService } from '../services/listService.js';
 
 export class ListController {
     constructor() {

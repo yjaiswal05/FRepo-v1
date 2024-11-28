@@ -1,4 +1,4 @@
-import { MovieService } from '../services/movieService';
+import { MovieService } from '../services/movieService.js';
 
 export class MovieController {
     constructor() {
@@ -67,6 +67,15 @@ export class MovieController {
         try {
             await this.movieService.deleteReview(req.params.reviewId, req.user.id);
             res.status(204).send();
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    getHeroImages = async (req, res, next) => {
+        try {
+            const heroImages = await this.movieService.getHeroImages();
+            res.json(heroImages);
         } catch (error) {
             next(error);
         }

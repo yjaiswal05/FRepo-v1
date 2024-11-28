@@ -1,22 +1,19 @@
 import express from 'express';
-import { MovieController } from '../controllers/movieController';
-import { auth } from '../middleware/auth';
+import { MovieController } from '../controllers/movieController.js';
+import { auth } from '../middleware/auth.middleware.js';
 
 const router = express.Router();
 const movieController = new MovieController();
 
-// Movie routes
+// Basic movie routes
 router.get('/', movieController.getMovies);
 router.get('/:id', movieController.getMovie);
 router.get('/:id/reviews', movieController.getMovieReviews);
+router.get('/hero-images', movieController.getHeroImages);
 
-// Review routes (requires authentication)
+// Protected routes (require authentication)
 router.post('/:id/reviews', auth, movieController.createReview);
 router.put('/reviews/:reviewId', auth, movieController.updateReview);
 router.delete('/reviews/:reviewId', auth, movieController.deleteReview);
-
-// Lists routes
-router.post('/:id/lists/:listId', auth, movieController.addToList);
-router.delete('/:id/lists/:listId', auth, movieController.removeFromList);
 
 export default router; 

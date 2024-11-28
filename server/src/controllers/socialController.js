@@ -1,4 +1,4 @@
-import { SocialService } from '../services/socialService';
+import { SocialService } from '../services/socialService.js';
 
 export class SocialController {
     constructor() {

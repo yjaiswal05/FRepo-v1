@@ -1,8 +1,16 @@
+import app from './src/app';
+import dotenv from 'dotenv';
+
+dotenv.config();
 const express = require('express');
 const cors = require('cors');
 const heroImagesRouter = require('./routes/heroImages');
 
 const app = express();
+
+// Middleware
+app.use(cors());
+app.use(express.json());
 
 // Error handling middleware
 app.use((err, req, res, next) => {

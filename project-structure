@@ -3,13 +3,21 @@ film-social-platform/
 │   ├── public/
 │   │   ├── index.html
 │   ├── src/
+│   │   └── assets/
 │   │   ├── components/
 │   │   │   ├── common/
 │   │   │   ├── layout/
 │   │   │   ├── movie/
 │   │   │   ├── social/
+│   │   │   ├── admin/
+│   │   │   ├── search/
 │   │   │   └── user/
 │   │   ├── pages/
+│   │   │   ├── auth/
+│   │   │   ├── movies/
+│   │   │   ├── profile/
+│   │   │   ├── search/
+
 │   │   ├── services/
 │   │   ├── context/
 │   │   ├── hooks/
@@ -17,18 +25,39 @@ film-social-platform/
 │   │   └── styles/
 
 
+
 │   └── package.json
 ├── server/                 # Node.js backend
-│   ├── .env
-│   │   ├── PORT=3001
-│   │   ├── DB_USER=your_postgres_user
-│   │   ├── DB_HOST=localhost
-│   │   ├── DB_NAME=film_social
-│   │   ├── DB_PASSWORD=your_postgres_password
-│   │   ├── DB_PORT=5432
-│   │   ├── JWT_SECRET=your_jwt_secret_key
-│   │   ├── REDIS_HOST=localhost
-│   │   ├── REDIS_PORT=6379
-│   │   └── REDIS_PASSWORD=your_redis_password
-├── docker/                 # Docker configuration
-└── docs/                   # Documentation 
+├── config/
+│   ├── db.config.js         # Database configuration
+│   ├── redis.js   
+│   └── auth.config.js       # Authentication configuration
+│
+├── controllers/
+│   ├── movieController.js   # Movie-related business logic
+│   ├── userController.js    # User-related business logic
+│   └── authController.js    # Authentication-related logic
+│
+├── middleware/
+│   ├── auth.middleware.js   # Authentication middleware
+│   ├── error.middleware.js  # Error handling middleware
+│   └── validate.middleware.js # Input validation middleware
+│
+├── models/
+│   ├── movie.model.js      # Movie database model
+│   └── user.model.js       # User database model
+│
+├── routes/
+│   ├── movieRoutes.js      # Movie-related routes
+│   ├── userRoutes.js       # User-related routes
+│   └── authRoutes.js       # Authentication routes
+│
+├── utils/
+│   ├── logger.js           # Logging utility
+│   └── helpers.js          # Helper functions
+│
+├── .env                    # Environment variables
+├── .gitignore             # Git ignore file
+├── package.json           # Project dependencies
+├── package-lock.json      # Locked dependencies
+└── index.js              # Entry point
