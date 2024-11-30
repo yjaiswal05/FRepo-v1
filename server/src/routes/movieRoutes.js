@@ -4,10 +4,16 @@ import { MovieController } from '../controllers/movieController.js';
 const router = express.Router();
 const movieController = new MovieController();
 
-// GET routes
-router.get('/', movieController.getMovies);
+// GET routes for different movie sections
+router.get('/trending', movieController.getTrendingMovies);
+router.get('/popular', movieController.getPopularMovies);
+router.get('/boxoffice', movieController.getBoxOfficeMovies);
+router.get('/critics', movieController.getCriticsChoice);
+router.get('/new', movieController.getNewReleases);
+router.get('/topgenre', movieController.getTopByGenre);
 
-// POST routes - make sure these have proper callback functions
+// Existing routes
+router.get('/', movieController.getMovies);
 router.post('/:id/favorite', movieController.toggleFavorite);
 router.post('/:id/watchlist', movieController.toggleWatchlist);
 
