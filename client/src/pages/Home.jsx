@@ -1,11 +1,12 @@
 import React from 'react';
 import { Box, Typography, Container, Button, Tabs, Tab, IconButton, Chip, Tooltip, Grid, Stack, TextField } from '@mui/material';
 import { styled } from '@mui/system';
-import { ThumbUp, List, Movie, Visibility, SyncAlt, StarRate, Book, Groups, ArrowBackIos, ArrowForwardIos, Whatshot, Star, NewReleases, Update, LocalFireDepartment, Theaters, AutoAwesome, Schedule, Favorite, Facebook, Twitter, Instagram, YouTube, KeyboardArrowUp } from '@mui/icons-material';
+import { ThumbUp, List, Movie, Visibility, SyncAlt, StarRate, Book, Groups, ArrowBackIos, ArrowForwardIos, Whatshot, Star, NewReleases, Update, LocalFireDepartment, Theaters, AutoAwesome, Schedule, Favorite, Facebook, Twitter, Instagram, YouTube, KeyboardArrowUp, LocalMovies } from '@mui/icons-material';
 import { useState, useEffect, useRef } from 'react';
 import Icon from '../components/Icon';
 import { getHeroImages } from '../services/heroImageService';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 // Styled component for the glassmorphic effect
 const GlassmorphicBar = styled(Box)({
@@ -881,6 +882,7 @@ const Home = () => {
   const [error, setError] = useState(null);
   const [activeFeature, setActiveFeature] = React.useState(0);
   const [imageError, setImageError] = useState({});
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchHeroImages = async () => {
@@ -912,6 +914,11 @@ const Home = () => {
       "https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?ixlib=rb-4.0.3", // Replace with your watch party image
     ];
     return images[index];
+  };
+
+  // Add this function to handle navigation
+  const handleMoviesClick = () => {
+    navigate('/movies');
   };
 
   return (

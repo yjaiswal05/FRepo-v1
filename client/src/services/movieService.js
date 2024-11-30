@@ -1,51 +1,46 @@
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001/api';
+const BASE_URL = 'http://localhost:5000/api';
 
 export const movieService = {
-  async getMovies(params) {
-    const response = await axios.get(`${API_URL}/movies`, { params });
-    return response.data;
+  async getMovies({ page = 1, genres = [], year = [], rating = [], platform = 'all', sort = 'popularity.desc' }) {
+    try {
+      const response = await axios.get(`${BASE_URL}/movies`, {
+        params: {
+          page,
+          genres: genres.join(','),
+          year_start: year[0],
+          year_end: year[1],
+          rating_start: rating[0],
+          rating_end: rating[1],
+          platform,
+          sort
+        }
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching movies:', error);
+      throw error;
+    }
   },
 
-  async getMovie(id) {
-    const response = await axios.get(`${API_URL}/movies/${id}`);
-    return response.data;
+  async toggleFavorite(movieId) {
+    try {
+      const response = await axios.post(`${BASE_URL}/movies/${movieId}/favorite`);
+      return response.data;
+    } catch (error) {
+      console.error('Error toggling favorite:', error);
+      throw error;
+    }
   },
 
-  async getMovieReviews(movieId, params) {
-    const response = await axios.get(`${API_URL}/movies/${movieId}/reviews`, { params });
-    return response.data;
-  },
-
-  async createReview(movieId, reviewData) {
-    const token = localStorage.getItem('token');
-    const response = await axios.post(
-      `${API_URL}/movies/${movieId}/reviews`,
-      reviewData,
-      {
-        headers: { Authorization: `Bearer ${token}` }
-      }
-    );
-    return response.data;
-  },
-
-  async updateReview(reviewId, reviewData) {
-    const token = localStorage.getItem('token');
-    const response = await axios.put(
-      `${API_URL}/movies/reviews/${reviewId}`,
-      reviewData,
-      {
-        headers: { Authorization: `Bearer ${token}` }
-      }
-    );
-    return response.data;
-  },
-
-  async deleteReview(reviewId) {
-    const token = localStorage.getItem('token');
-    await axios.delete(`${API_URL}/movies/reviews/${reviewId}`, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
+  async toggleWatchlist(movieId) {
+    try {
+      const response = await axios.post(`${BASE_URL}/movies/${movieId}/watchlist`);
+      return response.data;
+    } catch (error) {
+      console.error('Error toggling watchlist:', error);
+      throw error;
+    }
   }
 }; 

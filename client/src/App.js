@@ -4,6 +4,7 @@ import { ThemeProvider, createTheme } from '@mui/material';
 import Navbar from './components/layout/Navbar';
 import './App.css';
 import Home from './pages/Home.jsx';
+import Movies from './pages/Movies';
 
 // Create a custom theme
 const theme = createTheme({
@@ -33,7 +34,7 @@ function App() {
           <main style={{ marginTop: '80px', padding: '20px' }}>
             <Routes>
               <Route path="/" element={<Home />} />
-              <Route path="/movies" element={<h2>Movies Page (Coming Soon)</h2>} />
+              <Route path="/movies" element={<Movies />} />
               <Route path="/login" element={<h2>Login Page (Coming Soon)</h2>} />
             </Routes>
           </main>

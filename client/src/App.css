@@ -43,3 +43,15 @@ main {
     transform: rotate(360deg);
   }
 }
+
+.app {
+  background-color: black;
+  min-height: 100vh;
+}
+
+/* Also add this to ensure the html and body are black */
+html, body {
+  background-color: black;
+  margin: 0;
+  padding: 0;
+}
