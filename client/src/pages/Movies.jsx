@@ -5,6 +5,7 @@ import {
   Typography,
   IconButton,
   Tooltip,
+  tooltipClasses,
 } from '@mui/material';
 import { styled } from '@mui/system';
 import { 
@@ -13,6 +14,8 @@ import {
   ChevronRight,
   Favorite,
   RemoveRedEye,
+  BookmarkBorder,
+  BookmarkAdded,
 } from '@mui/icons-material';
 import axios from 'axios';
 
@@ -123,12 +126,13 @@ const MovieStats = styled(Box)({
 const StyledTooltip = styled(({ className, ...props }) => (
   <Tooltip {...props} classes={{ popper: className }} />
 ))({
-  '& .MuiTooltip-tooltip': {
+  [`& .${tooltipClasses.tooltip}`]: {
     backgroundColor: 'rgba(0, 0, 0, 0.85)',
-    padding: '6px 12px',
+    color: '#fff',
     fontSize: '0.75rem',
+    padding: '8px 12px',
     borderRadius: '4px',
-    margin: '4px 0'
+    maxWidth: 'none'
   }
 });
 
@@ -146,6 +150,24 @@ const IconsContainer = styled(Box)({
   display: 'flex',
   alignItems: 'center',
   gap: '12px', // Space between icons
+});
+
+const TitleRow = styled(Box)({
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  gap: '8px'
+});
+
+const BookmarkIcon = styled(BookmarkBorder)({
+  color: '#989898',
+  fontSize: '1.2rem',
+  cursor: 'pointer',
+  transition: 'all 0.2s ease',
+  '&:hover': {
+    color: '#ffffff',
+    transform: 'scale(1.1)',
+  }
 });
 
 const Movies = () => {
@@ -168,7 +190,7 @@ const Movies = () => {
   };
 
   // Section component
-  const MovieSection = ({ title, movies, sectionId }) => (
+  const MovieSection = ({ title, movies = [], sectionId }) => (
     <SectionContainer>
       <SectionTitle variant="h5">{title}</SectionTitle>
       <ScrollContainer>
@@ -180,13 +202,13 @@ const Movies = () => {
         </ScrollButton>
         
         <ScrollContent id={sectionId}>
-          {movies.map((movie) => (
-            <MovieCard key={movie.id}>
+          {movies && movies.map((movie) => (
+            <MovieCard key={movie?.id || Math.random()}>
               {/* Image Container */}
               <Box sx={{ height: '300px' }}>
                 <img
-                  src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
-                  alt={movie.title}
+                  src={movie?.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : '/placeholder.jpg'}
+                  alt={movie?.title || 'Movie'}
                   style={{ 
                     width: '100%', 
                     height: '100%',
@@ -197,7 +219,19 @@ const Movies = () => {
               
               {/* Movie Information */}
               <MovieInfo>
-                <MovieTitle>{movie.title}</MovieTitle>
+                {/* Title and Bookmark Row */}
+                <TitleRow>
+                  <MovieTitle>{movie?.title || 'Loading...'}</MovieTitle>
+                  <StyledTooltip 
+                    title="Add to Watchlist"
+                    placement="top"
+                    arrow
+                  >
+                    <IconWrapper>
+                      <BookmarkIcon />
+                    </IconWrapper>
+                  </StyledTooltip>
+                </TitleRow>
                 
                 {/* Year and Icons Row */}
                 <Box sx={{ 
@@ -210,13 +244,14 @@ const Movies = () => {
                     variant="caption" 
                     sx={{ color: '#989898' }}
                   >
-                    {new Date(movie.release_date).getFullYear()}
+                    {movie?.release_date ? new Date(movie.release_date).getFullYear() : 'N/A'}
                   </Typography>
                   
                   <IconsContainer>
                     <StyledTooltip 
-                      title={`${(movie.vote_count / 1000).toFixed(1)}k likes`}
+                      title={`${((movie?.vote_count || 0) / 1000).toFixed(1)}k likes`}
                       placement="top"
+                      arrow
                     >
                       <IconWrapper>
                         <Favorite sx={{ 
@@ -227,20 +262,22 @@ const Movies = () => {
                     </StyledTooltip>
 
                     <StyledTooltip 
-                      title={`${(movie.popularity / 1000).toFixed(1)}k views`}
+                      title={`${((movie?.popularity || 0) / 1000).toFixed(1)}k views`}
                       placement="top"
+                      arrow
                     >
                       <IconWrapper>
                         <RemoveRedEye sx={{ 
-                          color: 'pink',
+                          color: '#3498db',
                           fontSize: '0.9rem'
                         }} />
                       </IconWrapper>
                     </StyledTooltip>
 
                     <StyledTooltip 
-                      title={`Rating: ${movie.vote_average.toFixed(1)}`}
+                      title={`Rating: ${movie?.vote_average?.toFixed(1) || 'N/A'}`}
                       placement="top"
+                      arrow
                     >
                       <IconWrapper>
                         <Star sx={{ 

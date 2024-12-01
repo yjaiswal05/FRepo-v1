@@ -12,9 +12,4 @@ router.get('/critics', movieController.getCriticsChoice);
 router.get('/new', movieController.getNewReleases);
 router.get('/topgenre', movieController.getTopByGenre);
 
-// Existing routes
-router.get('/', movieController.getMovies);
-router.post('/:id/favorite', movieController.toggleFavorite);
-router.post('/:id/watchlist', movieController.toggleWatchlist);
-
 export default router; 
